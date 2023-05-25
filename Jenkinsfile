@@ -6,13 +6,13 @@ pipeline {
     parameters {
         choice(
             name: 'action',
-            choices: 'create\nrollback',
+            choices: 'create\rollback',
             description: 'Create/rollback of the deployment'
         )
         string(
             name: 'ImageName',
             description: "Name of the docker build",
-            defaultValue: "kubernetes-configmap-reload"
+            defaultValue: "my-cicd"
         )
         string(
             name: 'ImageTag',
@@ -22,7 +22,7 @@ pipeline {
         string(
             name: 'AppName',
             description: "Name of the Application",
-            defaultValue: "kubernetes-configmap-reload"
+            defaultValue: "my-cicd"
         )
         string(
             name: 'docker_repo',
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 gitCheckout(
                     branch: "main",
-                    url: "https://github.com/Simrankhott/ci-cd-Jenkins-pipeline.git"
+                    url: "https://github.com/Simrankhott/Argo-cd.git"
                 )
             }
         }
@@ -57,7 +57,24 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-    
+        
+        stage('Build and Test') {
+            steps {
+                sh 'ls -ltr'
+                sh 'mvn clean package'
+            }
+        }
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://104.196.21.201:9000/"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }
+        }
+
         stage("DockerBuild and Push") {
             when {
                 expression { params.action == 'create' }
@@ -97,10 +114,33 @@ pipeline {
     
         stage("wait_for_pods") {
             steps {
-                sh 'sleep 300'
+                sh 'sleep 200'
             }
         }
-      
+       
+        stage('Update Deployment File') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        git config user.email "${GIT_USER_NAME}@simran.com"
+                        git config user.name "${GIT_USER_NAME}"
+                        git add .
+                        git commit -m "Updated deployment file"
+                        git push origin main
+                    '''
+                }
+            }
+        }
+
+        stage("wait_for_pods") {
+            steps {
+                sh 'sleep 200'
+            }
+        } 
+
         stage("rollback deployment") {
             steps {	            	         	           
                 sh """

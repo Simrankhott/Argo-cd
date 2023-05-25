@@ -42,14 +42,11 @@ pipeline {
                 expression { params.action == 'create' }
             }
             steps {
-                gitCheckout(
-                    branch: "main",
-                    url: "https://github.com/Simrankhott/Argo-cd.git"
-                )
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Simrankhott/Argo-cd.git'
             }
         }
       
-        stage('Build-Maven'){
+        stage('Build-Maven') {
             when {
                 expression { params.action == 'create' }
             }
@@ -64,13 +61,14 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+        
         stage('Static Code Analysis') {
             environment {
                 SONAR_URL = "http://3.6.160.99:9000/"
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                    sh "mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}"
                 }
             }
         }
@@ -107,8 +105,7 @@ pipeline {
                 expression { params.action == 'create' }
             }
             steps {
-                sh 'echo ${WORKSPACE}'
-                sh 'kubectl create -f ${WORKSPACE}/kubernetes-configmap.yml'
+                sh "kubectl create -f ${WORKSPACE}/kubernetes-configmap.yml"
             }
         }
     
@@ -135,7 +132,7 @@ pipeline {
             }
         }
 
-        stage("wait_for_pods") {
+        stage("wait_for_pods2") {
             steps {
                 sh 'sleep 200'
             }

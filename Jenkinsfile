@@ -38,18 +38,12 @@ pipeline {
     stages {
       
         stage('Git-Checkout') {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/Simrankhott/Argo-cd.git'
             }
         }
       
         stage('Build-Maven') {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 sh 'mvn clean package'
             }
@@ -74,36 +68,24 @@ pipeline {
         }
 
         stage("DockerBuild and Push") {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 dockerBuild("${params.ImageName}", "${params.docker_repo}")
             }
         }
     
         stage("Docker-CleanUP") {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 dockerCleanup("${params.ImageName}", "${params.docker_repo}")
             }
         }
     
         stage("Ansible Setup") {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 sh 'ansible-playbook ${WORKSPACE}/server_setup.yml'
             }
         }
     
         stage("Create deployment") {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 sh "kubectl create -f ${WORKSPACE}/kubernetes-configmap.yml"
             }
@@ -116,9 +98,6 @@ pipeline {
         }
        
         stage('Update Deployment File') {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''

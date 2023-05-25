@@ -1,7 +1,6 @@
 - name: Install and start Nginx
   hosts: localhost
-  remote_user: ubuntu
-  become: true
+  become: yes
 
   tasks:
     - name: Install Nginx

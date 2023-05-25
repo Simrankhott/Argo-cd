@@ -1,18 +1,22 @@
 ---
 - name: Install and start Nginx
-  hosts: all
-  remote_user: ubuntu
-  become: true
+  hosts: localhost
+  become: yes
   become_user: root
+  remote_user: ubuntu
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
     - name: Install Nginx
       apt:
         name: nginx
         state: present
 
-    - name: Start and enable Nginx
+    - name: Start Nginx service
       service:
         name: nginx
         state: started
-        enabled: true
+        enabled: yes

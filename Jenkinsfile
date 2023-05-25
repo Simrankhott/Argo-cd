@@ -2,18 +2,47 @@
 
 pipeline {
     agent any
-    
-    tools { 
+  
+    parameters {
+        choice(
+            name: 'action',
+            choices: 'create\rollback',
+            description: 'Create/rollback of the deployment'
+        )
+        string(
+            name: 'ImageName',
+            description: "Name of the docker build",
+            defaultValue: "my-cicd"
+        )
+        string(
+            name: 'ImageTag',
+            description: "Name of the docker build",
+            defaultValue: "v1"
+        )
+        string(
+            name: 'AppName',
+            description: "Name of the Application",
+            defaultValue: "my-cicd"
+        )
+        string(
+            name: 'docker_repo',
+            description: "Name of docker repository",
+            defaultValue: "simrankhot"
+        )
+    }
+      
+    tools{ 
         maven 'maven3'
     }
     
     stages {
+      
         stage('Git-Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/Simrankhott/Argo-cd.git'
             }
         }
-        
+      
         stage('Build-Maven') {
             steps {
                 sh 'mvn clean package'
@@ -37,37 +66,37 @@ pipeline {
                 }
             }
         }
-        
+
         stage("DockerBuild and Push") {
             steps {
-                dockerBuild("my-cicd", "simrankhot")
+                dockerBuild("${params.ImageName}", "${params.docker_repo}")
             }
         }
-        
+    
         stage("Docker-CleanUP") {
             steps {
-                dockerCleanup("my-cicd", "simrankhot")
+                dockerCleanup("${params.ImageName}", "${params.docker_repo}")
             }
         }
-        
+    
         stage("Ansible Setup") {
             steps {
                 sh 'ansible-playbook ${WORKSPACE}/server_setup.yml'
             }
         }
-        
+    
         stage("Create deployment") {
             steps {
                 sh "kubectl create -f ${WORKSPACE}/kubernetes-configmap.yml"
             }
         }
-        
+    
         stage("wait_for_pods") {
             steps {
                 sh 'sleep 200'
             }
         }
-        
+       
         stage('Update Deployment File') {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
@@ -81,19 +110,19 @@ pipeline {
                 }
             }
         }
-        
+
         stage("wait_for_pods2") {
             steps {
                 sh 'sleep 200'
             }
-        }
-        
+        } 
+
         stage("rollback deployment") {
-            steps {
+            steps {	            	         	           
                 sh """
-                    kubectl delete deploy my-cicd
-                    kubectl delete svc my-cicd
-                """
+                    kubectl delete deploy ${params.AppName}
+                    kubectl delete svc ${params.AppName}
+                """	       
             }
         }
     }

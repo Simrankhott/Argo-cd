@@ -1,16 +1,25 @@
----
-- name: Install and start Nginx
-  hosts: all
-  become: true
-  
+- hosts: localhost
+  become: yes
   tasks:
-    - name: Install Nginx
+    - name: update
       apt:
-        name: nginx
-        state: present
+        update_cache: yes
 
-    - name: Start and enable Nginx
+    - name: install apache2
+      apt:
+        name: apache2
+        state: latest
+
+    - name: start apache2
       service:
-        name: nginx
+        name: apache2
         state: started
-        enabled: true
+        enabled: yes
+      notify:
+        - restart apache2
+
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted

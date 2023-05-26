@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 - hosts: localhost
   become: yes
+=======
+- name: Install and start Nginx
+  hosts: localhost
+  become: yes
+
+>>>>>>> 74633471f3b66a5f381ec3b3fb572b9babf46c7b
   tasks:
     - name: update
       apt:

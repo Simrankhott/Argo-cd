@@ -36,6 +36,7 @@ pipeline {
     }
 
     stages {
+      
         stage('Git-Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/Simrankhott/Argo-cd.git'
@@ -66,14 +67,17 @@ pipeline {
             }
         }
 
+
         stage("DockerBuild and Push") {
             steps {
+                dockerBuild("${params.ImageName}", "${params.docker_repo}")
                 dockerBuild("${params.ImageName}", "${params.docker_repo}")
             }
         }
 
         stage("Docker-CleanUP") {
             steps {
+                dockerCleanup("${params.ImageName}", "${params.docker_repo}")
                 dockerCleanup("${params.ImageName}", "${params.docker_repo}")
             }
         }
@@ -98,8 +102,8 @@ pipeline {
 
         stage('Update Deployment File') {
             environment {
-                GIT_REPO_NAME = 'Jenkins-Zero-To-Hero'
-                GIT_USER_NAME = 'iam-veeramalla'
+                GIT_REPO_NAME = 'Argo-cd'
+                GIT_USER_NAME = 'Simrankhott'
             }
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
@@ -116,6 +120,7 @@ pipeline {
             }
         }
 
+
         stage("wait_for_pods2") {
             steps {
                 sh 'sleep 200'
@@ -123,7 +128,7 @@ pipeline {
         }
 
         stage("rollback deployment") {
-            steps {
+            steps {	            	         	           
                 sh """
                     kubectl delete deploy ${params.AppName}
                     kubectl delete svc ${params.AppName}

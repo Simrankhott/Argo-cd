@@ -3,7 +3,8 @@
   become: yes
 =======
 - name: Install and start Nginx
-  hosts: localhost
+  hosts: all
+  remote_user: ubuntu
   become: yes
 
 >>>>>>> 74633471f3b66a5f381ec3b3fb572b9babf46c7b

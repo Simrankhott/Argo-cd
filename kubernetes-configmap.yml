@@ -30,6 +30,6 @@ spec:
     spec:
       containers:
       - name: kubernetes-configmap
-        image: simrankhot/my-cicd:replaceImageTag
+        image: simrankhot/my-cicd:${BUILD_NUMBER}
         ports:
         - containerPort: 8080

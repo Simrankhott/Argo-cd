@@ -55,10 +55,10 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-
+        
         stage('Static Code Analysis') {
             environment {
-                SONAR_URL = 'http://3.111.32.138:9000/'
+                SONAR_URL = 'http://65.0.32.239:9000/'
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
@@ -67,22 +67,14 @@ pipeline {
             }
         }
 
-
         stage("DockerBuild and Push") {
             steps {
                 dockerBuild("${params.ImageName}", "${params.docker_repo}")
                 dockerBuild("${params.ImageName}", "${params.docker_repo}")
             }
         }
-
-        stage("Docker-CleanUP") {
-            steps {
-                dockerCleanup("${params.ImageName}", "${params.docker_repo}")
-                dockerCleanup("${params.ImageName}", "${params.docker_repo}")
-            }
-        }
-
-        stage("Ansible Setup") {
+        
+         stage("Ansible Setup") {
             steps {
                 sh 'ansible-playbook ${WORKSPACE}/server_setup.yml'
             }
@@ -96,7 +88,7 @@ pipeline {
 
         stage("wait_for_pods") {
             steps {
-                sh 'sleep 200'
+                sh 'sleep 30'
             }
         }
 
@@ -115,7 +107,7 @@ pipeline {
                         git add kubernetes-configmap.yml
                         git commit -m 'Update deployment image to version \${BUILD_NUMBER}'
                         git push https://\${GITHUB_TOKEN}@github.com/\${GIT_USER_NAME}/\${GIT_REPO_NAME} HEAD:main
-                    """
+                        """
                 }
             }
         }
@@ -123,15 +115,14 @@ pipeline {
 
         stage("wait_for_pods2") {
             steps {
-                sh 'sleep 200'
+                sh 'sleep 30'
             }
         }
 
         stage("rollback deployment") {
             steps {	            	         	           
                 sh """
-                    kubectl delete deploy ${params.AppName}
-                    kubectl delete svc ${params.AppName}
+                    kubectl delete deployment.apps/kubernetes-configmap
                 """
             }
         }

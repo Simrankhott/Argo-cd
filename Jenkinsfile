@@ -74,6 +74,12 @@ pipeline {
             }
         }
         
+         stage("Docker-CleanUP") {
+            steps {
+                dockerCleanup("${params.ImageName}", "${params.docker_repo}")
+            }
+        }
+        
          stage("Ansible Setup") {
             steps {
                 sh 'ansible-playbook ${WORKSPACE}/server_setup.yml'

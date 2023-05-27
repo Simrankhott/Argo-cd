@@ -30,6 +30,6 @@ spec:
     spec:
       containers:
       - name: kubernetes-configmap
-        image: nginx
+        image: my-cicd:v1
         ports:
         - containerPort: 8080

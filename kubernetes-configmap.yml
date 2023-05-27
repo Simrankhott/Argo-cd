@@ -11,8 +11,6 @@ spec:
     protocol: TCP
   selector:
     app: kubernetes-configmap
-
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,6 +30,6 @@ spec:
     spec:
       containers:
       - name: kubernetes-configmap
-        image: simrankhot/my-cicd:${BUILD_NUMBER}
+        image: simrankhot/my-cicd:replaceImageTag
         ports:
         - containerPort: 8080

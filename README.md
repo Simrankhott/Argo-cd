@@ -93,3 +93,22 @@ If you find any issues or have suggestions for improvements, feel free to open a
 This project is licensed under the [MIT License](LICENSE).
 
 Feel free to customize this README file based on your specific pipeline script and deployment process.
+
+# Screenshots
+
+<img width="960" alt="pro55" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/96fb6143-bf8e-46b1-8422-a0286b0addfe">
+
+<img width="960" alt="pro56" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/a4c83905-49ef-40a8-aa32-87f75aa9d13e">
+
+<img width="960" alt="pro57" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/2d74b37c-803c-4e91-8853-8ab154c0ae77">
+
+<img width="739" alt="pro58" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/e54d3b2d-438f-435e-b763-420117844788">
+
+<img width="960" alt="pro59" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/62fc636c-c697-4727-a150-c2107740465d">
+
+<img width="960" alt="Screenshot 2023-05-27 161210" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/b27a9e5b-381a-4d7e-8ad9-374de87c44c4">
+
+<img width="960" alt="Screenshot 2023-05-27 161332" src="https://github.com/Simrankhott/Argo-cd/assets/91006102/8d8a8055-8630-4aab-b23c-32c01aee7146">
+
+
+
